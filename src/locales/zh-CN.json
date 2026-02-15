@@ -2,7 +2,7 @@
   "title": "Deep Think",
   "theme": "系统主题",
   "openSource": "开源代码",
-  "copyright": "© 2025 WideSeek 版权所有",
+  "copyright": "© {{year}} WideSeek 版权所有",
   "searchPlaceholder": "请输入关键词",
   "research": {
     "common": {

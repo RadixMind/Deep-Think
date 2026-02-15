@@ -1,7 +1,7 @@
 {
   "name": "deep-research",
   "description": "Use any LLMs (Large Language Models) for Deep Think. Support SSE API and MCP server.",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "license": "MIT",
   "repository": {
     "url": "https://github.com/hongxing-chinese/deep-think"

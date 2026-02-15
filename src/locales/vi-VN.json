@@ -2,7 +2,7 @@
   "title": "Nghiên Cứu Sâu",
   "theme": "Chủ Đề",
   "openSource": "Mã Nguồn Mở",
-  "copyright": "Bản quyền © 2025 WideSeek.",
+  "copyright": "Bản quyền © {{year}} WideSeek.",
   "searchPlaceholder": "Vui lòng nhập từ khóa",
   "research": {
     "common": {

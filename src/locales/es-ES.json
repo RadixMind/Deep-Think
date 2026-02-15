@@ -2,7 +2,7 @@
   "title": "Deep Think",
   "theme": "Tema",
   "openSource": "Código Abierto",
-  "copyright": "Derechos de autor © 2025 WideSeek.",
+  "copyright": "Derechos de autor © {{year}} WideSeek.",
   "searchPlaceholder": "Por favor, introduce palabras clave",
   "research": {
     "common": {
