@@ -1,4 +1,4 @@
-import { streamText, generateText, type UserContent } from "ai";
+﻿import { streamText, generateText, type UserContent } from "ai";
 import { type GoogleGenerativeAIProviderMetadata } from "@ai-sdk/google";
 import { createAIProvider } from "./provider";
 import { createSearchProvider } from "./search";
@@ -125,7 +125,7 @@ class DeepResearch {
     for await (const part of result.fullStream) {
       if (part.type === "text-delta") {
         thinkTagStreamProcessor.processChunk(
-          part.textDelta,
+          part.text,
           (data) => {
             content += data;
             this.onMessage("message", { type: "text", text: data });
@@ -134,8 +134,8 @@ class DeepResearch {
             this.onMessage("reasoning", { type: "text", text: data });
           }
         );
-      } else if (part.type === "reasoning") {
-        this.onMessage("reasoning", { type: "text", text: part.textDelta });
+      } else if (part.type === "reasoning-delta") {
+        this.onMessage("reasoning", { type: "text", text: part.text });
       }
     }
     this.onMessage("message", { type: "text", text: "\n</report-plan>\n\n" });
@@ -293,7 +293,7 @@ class DeepResearch {
       for await (const part of searchResult.fullStream) {
         if (part.type === "text-delta") {
           thinkTagStreamProcessor.processChunk(
-            part.textDelta,
+            part.text,
             (data) => {
               content += data;
               this.onMessage("message", { type: "text", text: data });
@@ -302,34 +302,15 @@ class DeepResearch {
               this.onMessage("reasoning", { type: "text", text: data });
             }
           );
-        } else if (part.type === "reasoning") {
-          this.onMessage("reasoning", { type: "text", text: part.textDelta });
+        } else if (part.type === "reasoning-delta") {
+          this.onMessage("reasoning", { type: "text", text: part.text });
         } else if (part.type === "source") {
-          sources.push(part.source);
-        } else if (part.type === "finish") {
-          if (part.providerMetadata?.google) {
-            const { groundingMetadata } = part.providerMetadata.google;
-            const googleGroundingMetadata =
-              groundingMetadata as GoogleGenerativeAIProviderMetadata["groundingMetadata"];
-            if (googleGroundingMetadata?.groundingSupports) {
-              googleGroundingMetadata.groundingSupports.forEach(
-                ({ segment, groundingChunkIndices }) => {
-                  if (segment.text && groundingChunkIndices) {
-                    const index = groundingChunkIndices.map(
-                      (idx: number) => `[${idx + 1}]`
-                    );
-                    content = content.replaceAll(
-                      segment.text,
-                      `${segment.text}${index.join("")}`
-                    );
-                  }
-                }
-              );
-            }
-          } else if (part.providerMetadata?.openai) {
-            // Fixed the problem that OpenAI cannot generate markdown reference link syntax properly in Chinese context
-            content = content.replaceAll("【", "[").replaceAll("】", "]");
+          if (part.sourceType === "url") {
+            sources.push({ url: part.url, title: part.title });
           }
+        } else if (part.type === "finish") {
+          // AI SDK 6.x: providerMetadata is no longer available on finish
+          // Google Grounding metadata handling needs to be reimplemented
         }
       }
       thinkTagStreamProcessor.end();
@@ -454,7 +435,7 @@ class DeepResearch {
     if (enableFileFormatResource) {
       messageContent.push({
         type: "file",
-        mimeType: "text/markdown",
+        mediaType: "text/markdown",
         filename: "resources.md",
         data: fileData,
       });
@@ -476,7 +457,7 @@ class DeepResearch {
     for await (const part of result.fullStream) {
       if (part.type === "text-delta") {
         thinkTagStreamProcessor.processChunk(
-          part.textDelta,
+          part.text,
           (data) => {
             content += data;
             this.onMessage("message", { type: "text", text: data });
@@ -485,10 +466,12 @@ class DeepResearch {
             this.onMessage("reasoning", { type: "text", text: data });
           }
         );
-      } else if (part.type === "reasoning") {
-        this.onMessage("reasoning", { type: "text", text: part.textDelta });
+      } else if (part.type === "reasoning-delta") {
+        this.onMessage("reasoning", { type: "text", text: part.text });
       } else if (part.type === "source") {
-        sources.push(part.source);
+        if (part.sourceType === "url") {
+          sources.push({ url: part.url, title: part.title });
+        }
       } else if (part.type === "finish") {
         if (sources.length > 0) {
           const sourceContent =

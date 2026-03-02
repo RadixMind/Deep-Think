@@ -760,7 +760,6 @@ export class UltraThinkEngine {
       const result = await generateObject({
         model,
         schema: agentConfigSchema,
-        mode: "json", // Use JSON mode for broader model compatibility
         prompt: generateAgentPromptsPrompt.replace("{plan}", plan),
       });
 

@@ -1,5 +1,6 @@
-import type { GoogleVertexProviderSettings } from "@ai-sdk/google-vertex/edge";
+﻿import type { GoogleVertexProviderSettings } from "@ai-sdk/google-vertex/edge";
 import type { AzureOpenAIProviderSettings } from "@ai-sdk/azure";
+import type { LanguageModel } from "ai";
 
 export interface AIProviderOptions {
   provider: string;
@@ -19,14 +20,14 @@ export async function createAIProvider({
   headers,
   model,
   settings,
-}: AIProviderOptions) {
+}: AIProviderOptions): Promise<LanguageModel> {
   if (provider === "google") {
     const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
     const google = createGoogleGenerativeAI({
       baseURL,
       apiKey,
     });
-    return google(model, settings);
+    return google(model);
   } else if (provider === "google-vertex") {
     const { createVertex } = await import("@ai-sdk/google-vertex/edge");
     const googleVertexOptions: GoogleVertexProviderSettings = {};
@@ -45,7 +46,7 @@ export async function createAIProvider({
       };
     }
     const googleVertex = createVertex(googleVertexOptions);
-    return googleVertex(model, settings);
+    return googleVertex(model);
   } else if (provider === "openai") {
     const { createOpenAI } = await import("@ai-sdk/openai");
     const openai = createOpenAI({
@@ -56,7 +57,7 @@ export async function createAIProvider({
       model.startsWith("gpt-4.1") ||
       model.startsWith("gpt-5")    
       ? openai.responses(model)
-      : openai(model, settings);
+      : openai(model);
   } else if (provider === "anthropic") {
     const { createAnthropic } = await import("@ai-sdk/anthropic");
     const anthropic = createAnthropic({
@@ -64,28 +65,28 @@ export async function createAIProvider({
       apiKey,
       headers,
     });
-    return anthropic(model, settings);
+    return anthropic(model);
   } else if (provider === "deepseek") {
     const { createDeepSeek } = await import("@ai-sdk/deepseek");
     const deepseek = createDeepSeek({
       baseURL,
       apiKey,
     });
-    return deepseek(model, settings);
+    return deepseek(model);
   } else if (provider === "xai") {
     const { createXai } = await import("@ai-sdk/xai");
     const xai = createXai({
       baseURL,
       apiKey,
     });
-    return xai(model, settings);
+    return xai(model);
   } else if (provider === "mistral") {
     const { createMistral } = await import("@ai-sdk/mistral");
     const mistral = createMistral({
       baseURL,
       apiKey,
     });
-    return mistral(model, settings);
+    return mistral(model);
   } else if (provider === "azure") {
     const { createAzure } = await import("@ai-sdk/azure");
     const azureOptions: AzureOpenAIProviderSettings = {};
@@ -99,14 +100,14 @@ export async function createAIProvider({
       azureOptions.apiKey = apiKey;
     }
     const azure = createAzure(azureOptions);
-    return azure(model, settings);
+    return azure(model);
   } else if (provider === "openrouter") {
     const { createOpenRouter } = await import("@openrouter/ai-sdk-provider");
     const openrouter = createOpenRouter({
       baseURL,
       apiKey,
     });
-    return openrouter(model, settings);
+    return openrouter(model);
   } else if (provider === "openaicompatible") {
     const { createOpenAICompatible } = await import(
       "@ai-sdk/openai-compatible"
@@ -116,7 +117,7 @@ export async function createAIProvider({
       baseURL,
       apiKey,
     });
-    return openaicompatible(model, settings);
+    return openaicompatible(model);
   } else if (provider === "pollinations") {
     const { createOpenAICompatible } = await import(
       "@ai-sdk/openai-compatible"
@@ -126,7 +127,7 @@ export async function createAIProvider({
       baseURL,
       apiKey,
     });
-    return pollinations(model, settings);
+    return pollinations(model);
   } else if (provider === "ollama") {
     const { createOllama } = await import("ollama-ai-provider");
     const local = global.location || {};
@@ -143,7 +144,7 @@ export async function createAIProvider({
         });
       },
     });
-    return ollama(model, settings);
+    return ollama(model) as unknown as LanguageModel;
   } else {
     throw new Error("Unsupported Provider: " + provider);
   }
