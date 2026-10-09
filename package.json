@@ -4,9 +4,9 @@
   "version": "0.11.0",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/hongxing-chinese/deep-think"
+    "url": "https://github.com/RadixMind/Deep-Think"
   },
-  "bugs": "https://github.com/hongxing-chinese/deep-think/issues",
+  "bugs": "https://github.com/RadixMind/Deep-Think/issues",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
